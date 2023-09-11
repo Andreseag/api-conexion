@@ -69,6 +69,7 @@ export const getNewsId= async (req, res) => {
                 discharges: row.discharges,
                 },
                 media: mediaRows.map((mediaRow) => ({
+                id: mediaRow.id,
                 type: mediaRow.type,
                 media: mediaRow.media,
                 reference: mediaRow.reference,
@@ -143,6 +144,7 @@ export const getNews= async (req, res) => {
                 discharges: row.discharges,
                 },
                 media: mediaRows.map((mediaRow) => ({
+                id: mediaRow.id,
                 type: mediaRow.type,
                 media: mediaRow.media,
                 reference: mediaRow.reference,
@@ -154,5 +156,51 @@ export const getNews= async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "error get news" });
+    }
+};
+
+export const deleteNewsId= async (req, res) => {
+    let {id} = req.params;
+    let sqlDeleteMedia = "DELETE FROM media WHERE `media`.`news` = "+id;
+    let sqlDeleteNews = "DELETE FROM news WHERE `news`.`id` = "+id;
+    try {
+        await pool.query(sqlDeleteMedia);  
+        await pool.query(sqlDeleteNews);
+        return res.status(200).json({ message: "Process Delete Complete ", id });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "error delete news" });
+    }
+};
+
+const updateMedia= async (params) => {
+    const {id, type, media, reference } = params;
+    try {
+        await pool.query(
+            "UPDATE media SET type = IFNULL(?, type), media = IFNULL(?, media), reference = IFNULL(?, reference), updatedate = now()  WHERE id = ?",
+            [type, media, reference, id]
+        ); 
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "error update media" });
+    }
+};
+
+export const updateNewsId= async (req, res) => {
+    let {id} = req.params;
+    const {news, media} = req.body;
+    const {title, description, author, publicationdate, newsbody, discharges} = news;
+    try {
+        await pool.query(
+            "UPDATE news SET title = IFNULL(?, title), description = IFNULL(?, description), author = IFNULL(?, author), publicationdate = IFNULL(?, publicationdate), newsbody = IFNULL(?, newsbody), discharges = IFNULL(?, discharges), updatedate = now()  WHERE id = ?",
+            [title, description, author, publicationdate, newsbody, discharges, id]
+        );
+        media.forEach(row => {
+            updateMedia(row);
+        });
+        return res.status(200).json({ message: "Process update Complete ", id });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "error update news" });
     }
 };
