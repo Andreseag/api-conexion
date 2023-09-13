@@ -10,7 +10,7 @@ import structure from "./routes/structure.routes.js";
 
 // Middlewares
 app.use(express.json());
-app.use(morgan(dev));
+app.use(morgan('combined'));
 
 // Routes
 app.use("/dev", dev);
