@@ -1,5 +1,6 @@
 import express from "express";
 import morgan from "morgan";
+import cors from "cors"
 const app = express();
 import dev from "./routes/devdb.routes.js";
 import login from "./routes/login.routes.js";
@@ -9,6 +10,7 @@ import structure from "./routes/structure.routes.js";
 
 
 // Middlewares
+app.use(cors());
 app.use(express.json());
 app.use(morgan('combined'));
 
