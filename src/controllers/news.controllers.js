@@ -10,8 +10,8 @@ export const insertNews = async (data) => {
 		return rows.insertId;
         */
         const { rows }= await pool.query(
-            "INSERT INTO news (title, description, author, publicationdate, newsbody, discharges, creaciondate, updatedate) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NULL) RETURNING id;",
-            [data.title, data.description, data.author, data.publicationdate, data.newsbody, data.discharges]
+            "INSERT INTO news (title, description, category, author, publicationdate, newsbody, discharges, creaciondate, updatedate) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NULL) RETURNING id;",
+            [data.title, data.description,data.category, data.author, data.publicationdate, data.newsbody, data.discharges]
         );
         return rows[0].id;
 	} catch (error) {
@@ -57,7 +57,7 @@ export const createNews= async (req, res) => {
 
 const prepareSqlId = (params) => {
     const { id } = params;
-    let sql = 'SELECT id, title, description, author, publicationdate, discharges, creaciondate, newsbody FROM news';
+    let sql = 'SELECT id, title, description, category, author, publicationdate, discharges, creaciondate, newsbody FROM news';
     sql += ` WHERE id = ${id}`;
     return sql;
 };
@@ -99,13 +99,17 @@ export const getNewsId= async (req, res) => {
 };
 
 const prepareSql = (params) => {
-    let sql = 'SELECT id, title, description, author, publicationdate, discharges, creaciondate newsbody FROM news';
+    let sql = 'SELECT id, title, description, category, author, publicationdate, discharges, creaciondate newsbody FROM news';
     let sqlNum = 'SELECT COUNT(1) AS total  FROM news';
-    const {title, author, publicationdate, page, perPage } = params;
+    const {title, category, author, publicationdate, page, perPage } = params;
     const conditions = [];
 
         if (title) {
             conditions.push(`title LIKE '%${title}%'`);
+        }
+
+        if (category) {
+            conditions.push(`category LIKE '%${category}%'`);
         }
 
         if (author) {
@@ -221,7 +225,7 @@ const updateMedia= async (params) => {
 export const updateNewsId= async (req, res) => {
     let {id} = req.params;
     const {news, media} = req.body;
-    const {title, description, author, publicationdate, newsbody, discharges} = news;
+    const {title, description, category, author, publicationdate, newsbody, discharges} = news;
     try {
         if (title) {
             sql ="UPDATE news SET title = '"+title+"', updatedate = NOW() WHERE id = '"+id+"'";
@@ -229,6 +233,10 @@ export const updateNewsId= async (req, res) => {
         }
         if (description) {
             sql ="UPDATE news SET description  = '"+description+"', updatedate = NOW() WHERE id = '"+id+"'";
+            await pool.query(sql);          
+        }
+        if (category) {
+            sql ="UPDATE news SET category  = '"+category+"', updatedate = NOW() WHERE id = '"+id+"'";
             await pool.query(sql);          
         }
         if (author) {
