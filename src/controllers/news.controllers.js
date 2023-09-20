@@ -10,7 +10,7 @@ export const insertNews = async (data) => {
 		return rows.insertId;
         */
         const { rows }= await pool.query(
-            "INSERT INTO news (title, description, category, author, publicationdate, newsbody, discharges, creaciondate, updatedate) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NULL) RETURNING id;",
+            "INSERT INTO news (title, description, category, author, publicationdate, newsbody, discharges, creaciondate, updatedate) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NULL) RETURNING id;",
             [data.title, data.description,data.category, data.author, data.publicationdate, data.newsbody, data.discharges]
         );
         return rows[0].id;
