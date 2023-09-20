@@ -7,6 +7,7 @@ import login from "./routes/login.routes.js";
 import news from "./routes/news.routes.js";
 import media from "./routes/media.routes.js";
 import structure from "./routes/structure.routes.js";
+import userapp from "./routes/userapp.routes.js";
 
 
 // Middlewares
@@ -20,6 +21,7 @@ app.use("/login", login);
 app.use("/structure", structure);
 app.use("/media", media);
 app.use("/news", news);
+app.use("/userapp", userapp);
 
 app.use((req, res, next) => {
     res.status(404).json({ message: "ruta no encontrada" });
