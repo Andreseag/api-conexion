@@ -41,7 +41,7 @@ export const getUserapp= async (req, res) => {
 
 export const deleteUserapp= async (req, res) => {
     let {id} = req.params;
-    let sqlpg = "DELETE FROM userapp WHERE id = '"+id+"'";
+    let sqlpg = "DELETE FROM userapp WHERE document = '"+id+"'";
     try {
         await pool.query(sqlpg);  
         return res.status(200).json({ message: "Process Delete Complete ", id });
