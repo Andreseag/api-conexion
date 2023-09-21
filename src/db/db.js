@@ -10,6 +10,7 @@ export const pool = createPool({
 */
 import pg from 'pg';
 const { Pool } = pg;
+
 export const pool = new Pool({
   user: 'root',
   host: 'dpg-ck09bdg21fec73e3db90-a',
@@ -17,7 +18,18 @@ export const pool = new Pool({
   password: 'KRGrgmazEU5fs3gbFwKIpARvfdoRRh8s',
   port: 5432, 
 });
+
 /*
+
+
+export const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'conexiondb',
+  password: '0',
+  port: 5432, 
+});
+
 export const pool = new Pool({
   user: 'postgres',
   host: 'localhost',

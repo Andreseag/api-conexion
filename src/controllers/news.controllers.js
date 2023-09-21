@@ -100,7 +100,7 @@ export const getNewsId= async (req, res) => {
 };
 
 const prepareSql = (params) => {
-    let sql = 'SELECT id, title, description, category, author, publicationdate, discharges, creaciondate newsbody FROM news';
+    let sql = 'SELECT id, title, description, category, author, publicationdate, discharges, creaciondate, newsbody FROM news';
     let sqlNum = 'SELECT COUNT(1) AS total  FROM news';
     const {title, category, author, publicationdate, page, perPage } = params;
     const conditions = [];
