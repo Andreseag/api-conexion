@@ -98,7 +98,7 @@ export const createTableMedia= async (req, res) => {
 				  id int(20) primary key AUTO_INCREMENT,
 				  news varchar(20),
 				  type varchar(20),
-				  media varchar(100),
+				  media varchar(400),
 				  reference varchar(40),
 				  creaciondate datetime,
 				  updatedate datetime
@@ -107,7 +107,7 @@ export const createTableMedia= async (req, res) => {
 				id serial primary key,
 				news varchar(20),
 				type varchar(20),
-				media varchar(100),
+				media varchar(400),
 				reference varchar(40),
 				creaciondate timestamp,
 				updatedate timestamp
