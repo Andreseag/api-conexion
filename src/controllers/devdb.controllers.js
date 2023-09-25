@@ -163,6 +163,7 @@ export const createTableNews= async (req, res) => {
 		let sqlpg = `CREATE TABLE IF NOT EXISTS news(
 				   id serial primary key,
 				   title varchar(1000),
+				   slug varchar(1000),
 				   description TEXT,
 				   category varchar(100),
 				   author varchar(100),
@@ -172,6 +173,7 @@ export const createTableNews= async (req, res) => {
 				   creaciondate timestamp,
 				   updatedate timestamp
 			   )`;
+			   console.log(sqlpg);
 	  	await pool.query(sqlpg);
 	  	res.status(200).json({ message: 'Proceso completo CREATE TABLE News' });
 	} catch (error) {

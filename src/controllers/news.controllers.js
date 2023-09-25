@@ -1,5 +1,15 @@
 import { pool } from "../db/db.js";
 
+const createSlug = (text) =>{
+    text = text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+    text = text.replace(/[^\w\s-]/g, "");
+    text = text.replace(/\s+/g, "-");
+    return text;
+}
+
 export const insertNews = async (data) => {
 	try {
         /*
@@ -9,9 +19,10 @@ export const insertNews = async (data) => {
 		);
 		return rows.insertId;
         */
+        let slug = createSlug(data.title);
         const { rows }= await pool.query(
-            "INSERT INTO news (title, description, category, author, publicationdate, newsbody, discharges, creaciondate, updatedate) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NULL) RETURNING id;",
-            [data.title, data.description,data.category, data.author, data.publicationdate, data.newsbody, data.discharges]
+            "INSERT INTO news (title,  slug, description, category, author, publicationdate, newsbody, discharges, creaciondate, updatedate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NULL) RETURNING id;",
+            [data.title, slug,  data.description,data.category, data.author, data.publicationdate, data.newsbody, data.discharges]
         );
         return rows[0].id;
 	} catch (error) {
@@ -56,13 +67,13 @@ export const createNews= async (req, res) => {
 };
 
 const prepareSqlId = (params) => {
-    const { id } = params;
-    let sql = 'SELECT id, title, description, category, author, publicationdate, discharges, creaciondate, newsbody FROM news';
-    sql += ` WHERE id = ${id}`;
+    const { slug } = params;
+    let sql = 'SELECT id, title, slug, description, category, author, publicationdate, discharges, creaciondate, newsbody FROM news';
+    sql += ` WHERE slug = '${slug}'`;
     return sql;
 };
 
-export const getNewsId= async (req, res) => {
+export const getNewsSlug= async (req, res) => {
     let sql = prepareSqlId(req.params);
     try {
         const resultQuery = await pool.query(sql);
@@ -76,6 +87,7 @@ export const getNewsId= async (req, res) => {
                 news: {
                 id: row.id,
                 title: row.title,
+                slug: row.slug,
                 description: row.description,
                 category: row.category,
                 author: row.author,
@@ -85,6 +97,7 @@ export const getNewsId= async (req, res) => {
                 },
                 media: mediaRows.map((mediaRow) => ({
                 id: mediaRow.id,
+                news: mediaRow.news,
                 type: mediaRow.type,
                 media: mediaRow.media,
                 reference: mediaRow.reference,
@@ -100,7 +113,7 @@ export const getNewsId= async (req, res) => {
 };
 
 const prepareSql = (params) => {
-    let sql = 'SELECT id, title, description, category, author, publicationdate, discharges, creaciondate, newsbody FROM news';
+    let sql = 'SELECT id, title, slug, description, category, author, publicationdate, discharges, creaciondate, newsbody FROM news';
     let sqlNum = 'SELECT COUNT(1) AS total  FROM news';
     const {title, category, author, publicationdate, page, perPage } = params;
     const conditions = [];
@@ -157,6 +170,7 @@ export const getNews= async (req, res) => {
                 news: {
                 id: row.id,
                 title: row.title,
+                slug: row.slug,
                 description: row.description,
                 category: row.category,
                 author: row.author,
@@ -166,6 +180,7 @@ export const getNews= async (req, res) => {
                 },
                 media: mediaRows.map((mediaRow) => ({
                 id: mediaRow.id,
+                news: mediaRow.news,
                 type: mediaRow.type,
                 media: mediaRow.media,
                 reference: mediaRow.reference,
